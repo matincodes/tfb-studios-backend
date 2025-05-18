@@ -5,10 +5,21 @@ import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import passport from './config/passport.js';
 import { corsMiddleware } from './middleware/corsMiddleware.js';
+import arcjetMiddleware from './middleware/arcjetMiddleware.js';
 import { config as env } from './config/env.js';
 
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
+import orderRoutes from './routes/orderRoutes.js';
+import fabricRoutes from './routes/fabricRoutes.js';
+import aiRoutes from './routes/aiRoutes.js';
+import designRoutes from './routes/designRoutes.js';
+import renderRoutes from './routes/renderRoutes.js';
+
+
+
+
+
 import { swaggerUi, specs } from './config/swagger.js';
 
 const app = express();
@@ -16,6 +27,7 @@ const app = express();
 // Security & Performance
 app.use(helmet());
 app.use(compression());
+app.use(arcjetMiddleware); // Arcjet middleware for security and rate limiting
 
 // CORS & Cookies
 app.use(corsMiddleware);
@@ -37,6 +49,13 @@ app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(specs));
 //  Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/fabrics', fabricRoutes);
+app.use('/api/ai', aiRoutes);
+app.use('/api/designs', designRoutes);
+app.use('/api/render', renderRoutes);
+
+
 
 // Health check
 app.get('/', (_, res) => res.send('TFB Studios API is live'));

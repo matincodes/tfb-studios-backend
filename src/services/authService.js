@@ -1,4 +1,3 @@
-// src/services/authService.js
 import bcrypt from 'bcrypt';
 import {
   createUser,
