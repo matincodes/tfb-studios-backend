@@ -90,15 +90,7 @@ export async function httpDeleteOrder(req, res) {
   }
 }
 
-/* PATCH /:id/status */
-export async function httpUpdateOrderStatus(req, res) {
-  try {
-    const updated = await updateOrderStatus(req.params.id, req.body.status);
-    res.json({ message: 'Order status updated', order: updated });
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to update status' });
-  }
-}
+
 
 /* PATCH /:id/tracking */
 export async function httpUpdateTracking(req, res) {
