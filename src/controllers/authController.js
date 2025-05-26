@@ -8,14 +8,14 @@ import { sendSuccess, sendError } from '../utils/response.js';
  * @desc    Sign up a new user
  */
 export const signUp = async (req, res) => {
-  const { fullName, email, password, role } = req.body;
+  const { name, email, password, role } = req.body;
 
-  if (!email || !password || !fullName) {
+  if (!email || !password || !name) {
     return sendError(res, 400, 'Name, email and password are required');
   }
 
   try {
-    const user = await registerUser({ fullName, email, password, role });
+    const user = await registerUser({ name, email, password, role });
 
     const tokens = generateTokenPair({ id: user.id, email: user.email, role: user.role });
 
