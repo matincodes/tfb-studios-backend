@@ -3,7 +3,6 @@ import cloudinary from '../config/cloudinary.js';
 import {
   createDesign,
   getUserDesigns,
-  getRenderedDesigns,
   getDesignById,
   deleteDesign,
 } from '../models/designModel.js';
@@ -27,7 +26,7 @@ export async function httpCreateDesign(req, res) {
       description,
       imageUrl,
       createdById: userId,
-      status: 'PENDING_RENDER',
+      status: 'UPLOADED',
     });
 
     res.status(201).json({ message: 'Design submitted', design });
@@ -45,30 +44,41 @@ export async function httpGetMyDesigns(req, res) {
   }
 }
 
-export async function httpGetAvailableDesigns(req, res) {
-  try {
-    const designs = await getRenderedDesigns();
-    res.json(designs);
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch rendered designs' });
-  }
-}
 
 export async function httpGetDesignById(req, res) {
   try {
     const design = await getDesignById(req.params.id);
-    if (!design) return res.status(404).json({ error: 'Design not found' });
+    if (!design) {
+      return res.status(404).json({ error: 'Design not found' });
+    }
+
+    if (req.user.role !== 'ADMIN' && design.createdById !== req.user.id) {
+        return res.status(403).json({ error: 'Forbidden: You do not have permission to view this design.' });
+    }
+
     res.json(design);
   } catch (err) {
+    console.error("Error fetching design by ID:", err);
     res.status(500).json({ error: 'Error fetching design' });
   }
 }
 
+
 export async function httpDeleteDesign(req, res) {
   try {
+    const designToDelete = await getDesignById(req.params.id);
+    if (!designToDelete) {
+        return res.status(404).json({ error: 'Design not found' });
+    }
+
+    if (req.user.role !== 'ADMIN' && designToDelete.createdById !== req.user.id) {
+        return res.status(403).json({ error: 'Forbidden: You do not have permission to delete this design.' });
+    }
+
     await deleteDesign(req.params.id);
-    res.json({ message: 'Design deleted' });
+    res.json({ message: 'Design deleted successfully' });
   } catch (err) {
+    console.error("Error deleting design:", err);
     res.status(500).json({ error: 'Delete failed' });
   }
 }

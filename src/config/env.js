@@ -14,4 +14,6 @@ export const config = {
   SUPABASE_URL: process.env.SUPABASE_URL,
   SUPABASE_KEY: process.env.SUPABASE_KEY,
   CLIENT_URL: process.env.CLIENT_URL || 'http://localhost:3000',
+  EMAIL_USER: process.env.EMAIL_USER,
+  EMAIL_PASS: process.env.EMAIL_PASS,
 };

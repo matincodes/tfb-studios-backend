@@ -1,8 +1,9 @@
 // src/controllers/authController.js
-import { registerUser, validateUserCredentials } from '../services/authService.js';
+import { registerUser, validateUserCredentials, createVerificationToken, verifyUserByToken } from '../services/authService.js';
 import { generateTokenPair, verifyRefreshToken } from '../services/tokenService.js';
 import { setAuthCookies, clearAuthCookies } from '../utils/cookieUtils.js';
 import { sendSuccess, sendError } from '../utils/response.js';
+import { sendVerificationEmail } from '../services/emailServices.js';
 
 /**
  * @desc    Sign up a new user
@@ -17,15 +18,37 @@ export const signUp = async (req, res) => {
   try {
     const user = await registerUser({ name, email, password, role });
 
-    const tokens = generateTokenPair({ id: user.id, email: user.email, role: user.role });
+    const token = await createVerificationToken(user.id);
 
-    setAuthCookies(res, tokens);
+    await sendVerificationEmail(user.email, token);
 
-    return sendSuccess(res, 201, 'User registered successfully', { user });
+    return sendSuccess(res, 201, 'User registered successfully! Please check your email to verify your account.', { user });
   } catch (error) {
     return sendError(res, error.status || 500, error.message || 'Signup failed');
   }
 };
+
+/**
+ * @desc    Verify user's email using a token
+ */
+export const verifyEmail = async (req, res) => {
+    try {
+        const { token } = req.query;
+        if (!token) {
+            return sendError(res, 400, 'Verification token is missing.');
+        }
+
+        const user = await verifyUserByToken(token);
+
+        const tokens = generateTokenPair({ id: user.id, email: user.email, role: user.role });
+
+        setAuthCookies(res, tokens);
+
+        return sendSuccess(res, 200, 'Email verified successfully! You can now log in.');
+    } catch (error) {
+        return sendError(res, error.status || 500, error.message || 'Email verification failed.');
+    }
+}
 
 /**
  * @desc    Log in an existing user

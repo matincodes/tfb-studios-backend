@@ -90,8 +90,6 @@ export async function httpDeleteOrder(req, res) {
   }
 }
 
-
-
 /* PATCH /:id/tracking */
 export async function httpUpdateTracking(req, res) {
   try {

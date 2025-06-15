@@ -6,6 +6,7 @@ import {
   signIn,
   signOut,
   refreshAccessToken,
+  verifyEmail
 } from '../controllers/authController.js';
 
 const router = Router();
@@ -112,5 +113,26 @@ router.post('/refresh-token', refreshAccessToken);
  *         description: User logged out
  */
 router.post('/logout', signOut);
+
+/**
+ * @swagger
+ * /api/auth/verify-email:
+ *   get:
+ *     summary: Verify user email using verification token
+ *     tags: [Auth]
+ *     parameters:
+ *       - in: query
+ *         name: token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Verification token sent to user's email
+ *     responses:
+ *       200:
+ *         description: Email verified successfully
+ *       400:
+ *         description: Verification token is missing or invalid
+ */
+router.get('/verify-email', verifyEmail);
 
 export default router;

@@ -14,20 +14,7 @@ export async function getUserDesigns(userId) {
 export async function getDesignById(id) {
   return prisma.design.findUnique({ where: { id } });
 }
-
-export async function getRenderedDesigns() {
-  return prisma.design.findMany({
-    where: { status: 'RENDERED' },
-    orderBy: { updatedAt: 'desc' },
-  });
-}
-
-export async function getPendingDesigns() {
-  return prisma.design.findMany({
-    where: { status: 'PENDING_RENDER' },
-    orderBy: { createdAt: 'asc' },
-  });
-}
+  
 
 export async function updateDesign(id, data) {
   return prisma.design.update({
@@ -41,3 +28,12 @@ export async function deleteDesign(id) {
     where: { id },
   });
 }
+
+export async function getDesignsAwaitingRender() {
+    return prisma.design.findMany({
+        where: { status: 'UPLOADED' },
+        orderBy: { createdAt: 'asc' },
+        include: { createdBy: { select: { name: true, email: true }}}
+    });
+}
+

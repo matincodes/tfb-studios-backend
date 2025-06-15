@@ -10,19 +10,27 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-model User {
-  id             String   @id @default(uuid())
-  email          String   @unique
-  name           String
-  role           Role     @default(USER)
-  profilePicture String?
-  password       Password @relation(fields: [passwordId], references: [id], onDelete: Cascade)
-  passwordId     String   @unique
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
 
-  designs Design[] @relation("UserCreatedDesigns")
-  orders  Order[]
+model User {
+  id                   String           @id @default(uuid())
+  email                String           @unique
+  name                 String
+  role                 Role             @default(USER)
+  profilePicture       String?
+  password             Password         @relation(fields: [passwordId], references: [id], onDelete: Cascade)
+  passwordId           String           @unique
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
+  isVerified           Boolean          @default(false)
+  verificationToken    String?          @unique
+  resetPasswordToken   String?          @unique
+  resetPasswordExpires DateTime?
+
+  designs              Design[]         @relation("UserSketches")
+  uploadedFabrics      Fabric[]         @relation("UserUploadedFabrics")
+  adminCreatedRenders  RenderedDesign[] @relation("AdminRenderCreations") // Renders created by this user (if admin)
+  comments             Comment[]
+  orders               Order[]
 }
 
 model Password {
@@ -33,33 +41,74 @@ model Password {
   user      User?
 }
 
-model Fabric {
-  id        String       @id @default(uuid())
-  name      String
-  type      String
-  color     String
-  imageUrl  String?
-  source    FabricSource @default(PLATFORM)
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
 
-  orders Order[]
+
+model Fabric {
+  id            String        @id @default(uuid())
+  name          String
+  type          String
+  color         String
+  imageUrl      String?
+  source        FabricSource  @default(PLATFORM)
+  uploadedBy    User?         @relation("UserUploadedFabrics", fields: [uploadedById], references: [id])
+  uploadedById  String?
+
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  renderedDesigns RenderedDesign[]
+  orders          Order[]
 }
+
 
 model Design {
-  id               String       @id @default(uuid())
+  id               String        @id @default(uuid())
   name             String
   description      String?
-  imageUrl         String? // Original sketch
-  renderedImageUrl String? // Rendered 3D
-  status           DesignStatus @default(UPLOADED)
-  createdBy        User         @relation("UserCreatedDesigns", fields: [createdById], references: [id])
-  createdById      String
-  createdAt        DateTime     @default(now())
-  updatedAt        DateTime     @updatedAt
+  imageUrl         String?       // original sketch image
+  status           DesignStatus  @default(UPLOADED)
 
-  orders Order[]
+  createdBy        User          @relation("UserSketches", fields: [createdById], references: [id])
+  createdById      String
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  activeRenderedDesignId String?             @unique // Ensures a Design has at most one active render
+  activeRenderedDesign   RenderedDesign?     @relation("ActiveRenderForDesign", fields: [activeRenderedDesignId], references: [id], onDelete: SetNull)
+  renderedDesigns  RenderedDesign[]
+  comments         Comment[]
+  orders           Order[]
 }
+
+
+model RenderedDesign {
+  id            String   @id @default(uuid())
+  designId      String   // Foreign key to the parent Design (sketch)
+  design        Design   @relation(fields: [designId], references: [id], onDelete: Cascade) // If parent Design is deleted, cascade delete renders
+
+  fabricId      String
+  fabric        Fabric   @relation(fields: [fabricId], references: [id])
+
+  imageUrl      String   // URL of the rendered image
+  notes         String?  // Optional notes from the admin who uploaded this render
+  status        RenderedDesignStatus @default(PENDING_REVIEW) // Status of this specific render
+
+  comment       Comment[]
+
+  createdById   String?  // ID of the admin who created/uploaded this render
+  createdBy     User?    @relation("AdminRenderCreations", fields: [createdById], references: [id]) // Relation to the admin User
+
+  // Relation to Design if this RenderedDesign is the active one (for bi-directional access if needed, optional here)
+  designAsActiveRender Design? @relation("ActiveRenderForDesign") // This is the other side of Design.activeRenderedDesign
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([designId])
+  @@index([fabricId])
+  @@index([createdById])
+  @@index([status])
+}
+
 
 model Order {
   id             String      @id @default(uuid())
@@ -73,12 +122,36 @@ model Order {
   quantity       Int
   notes          String?
   total          Float
-  shippingDate   DateTime? // when the parcel leaves the studio
-  trackingNumber String? // 3rd-party tracking code
-  deliveryDate   DateTime? // confirmed delivered
+  shippingDate   DateTime?
+  trackingNumber String?
+  deliveryDate   DateTime?
   status         OrderStatus @default(PENDING)
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
+}
+
+
+model Comment {
+  id          String   @id @default(uuid())
+  text        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Who wrote the comment?
+  authorId    String
+  author      User     @relation(fields: [authorId], references: [id])
+
+  // What was the comment on? (Example: a Design)
+  designId    String? // Optional: A comment might not always be on a design
+  design      Design?  @relation(fields: [designId], references: [id])
+
+  // You could also have comments on RenderedDesigns, Articles, etc.
+  renderedDesignId String?
+  renderedDesign   RenderedDesign? @relation(fields: [renderedDesignId], references: [id])
+
+  @@index([authorId])
+  @@index([designId])
+  @@index([renderedDesignId])
 }
 
 enum Role {
@@ -87,14 +160,22 @@ enum Role {
 }
 
 enum DesignStatus {
-  UPLOADED // raw sketch
-  RENDERING // in pipeline
-  RENDERED // ready for ordering
+  UPLOADED   
+  RENDERING
+  REVIEW_PENDING
+  REVIEW_COMPLETED   
+  RENDERED    
+}
+
+enum RenderedDesignStatus {
+  PENDING_REVIEW 
+  ACCEPTED       
+  REJECTED      
 }
 
 enum FabricSource {
-  PLATFORM
-  USER_UPLOAD
+  PLATFORM     
+  USER_UPLOAD 
 }
 
 enum OrderStatus {

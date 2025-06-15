@@ -2,20 +2,24 @@
 import express from 'express';
 import upload from '../config/multer.js';
 import { isAuth } from '../middleware/isAuth.js';
+// --- 1. Import the new controller functions ---
 import {
   httpCreateDesign,
   httpGetMyDesigns,
-  httpGetAvailableDesigns,
   httpGetDesignById,
-  httpDeleteDesign,
+  httpDeleteDesign
 } from '../controllers/designController.js';
 
 const router = express.Router();
 
-router.post('/', isAuth, upload.single('image'), httpCreateDesign);
-router.get('/mine', isAuth, httpGetMyDesigns);
-router.get('/available-for-order', httpGetAvailableDesigns);
-router.get('/:id', httpGetDesignById);
-router.delete('/:id', isAuth, httpDeleteDesign);
+
+// --- Core Routes for Managing Designs (Sketches) ---
+
+router.post('/', isAuth, upload.single('image'), httpCreateDesign); // User creates a sketch
+router.get('/mine', isAuth, httpGetMyDesigns); // User gets a list of their sketches
+router.get('/:id', isAuth, httpGetDesignById); // User gets a single sketch they own
+router.delete('/:id', isAuth, httpDeleteDesign); // User deletes their own sketch
+
+
 
 export default router;
