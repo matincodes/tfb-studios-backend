@@ -26,16 +26,6 @@ export async function findUserWithPassword(email) {
   return prisma.user.findUnique({
     where: { email },
     include: { password: true },
-    select: {
-      id: true,
-      email: true,
-      role: true,
-       password: {
-        select: {
-          hashed: true
-        }
-      },
-    },
   });
 }
 
