@@ -8,6 +8,13 @@ export async function getUserDesigns(userId) {
   return prisma.design.findMany({
     where: { createdById: userId },
     orderBy: { createdAt: 'desc' },
+    include: {
+        createdBy: {
+            select: {
+                name: true
+            }
+        }
+    }
   });
 }
 

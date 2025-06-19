@@ -4,7 +4,7 @@ import {config as env} from '../config/env.js';
 
 // Define the allowed origin. For development, this is your Next.js frontend URL.
 // For production, you would change this to 'https://www.tfbstudios.com'
-const allowedOrigins = [env.CLIENT_URL || 'http://localhost:3000'];
+const allowedOrigins = 'http://localhost:3000';
 
 const corsOptions = {
   // The origin property must be set to your specific frontend URL. A wildcard ('*') will not work for credentials.
@@ -24,4 +24,4 @@ const corsOptions = {
   allowedHeaders: ['Content-Type', 'Authorization'],
 };
 
-export default corsMiddleware = cors(corsOptions);
+export const corsMiddleware = cors(corsOptions);

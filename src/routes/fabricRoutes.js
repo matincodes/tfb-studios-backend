@@ -13,12 +13,10 @@ import {
 const router = express.Router();
 
 // Public
-router.get('/', httpGetAllFabrics);
+router.get('/', isAuth, httpGetAllFabrics);
 router.get('/:id', httpGetFabricById);
-
-// Admin only
-router.post('/', isAuth, requireRole('ADMIN'), upload.single('image'), httpCreateFabric);
-router.put('/:id', isAuth, requireRole('ADMIN'), upload.single('image'), httpUpdateFabric);
-router.delete('/:id', isAuth, requireRole('ADMIN'), httpDeleteFabric);
+router.post('/', isAuth, upload.single('image'), httpCreateFabric);
+router.put('/:id', isAuth, upload.single('image'), httpUpdateFabric);
+router.delete('/:id', isAuth, httpDeleteFabric);
 
 export default router;

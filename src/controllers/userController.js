@@ -14,6 +14,7 @@ import upload from '../config/multer.js';
  * GET user profile
  */
 export async function getUserProfile(req, res) {
+  console.log('--- Controller: "getUserProfile" reached successfully! ---');
   try {
     const userId = req.user.id;
 

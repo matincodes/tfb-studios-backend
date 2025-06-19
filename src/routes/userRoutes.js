@@ -73,7 +73,7 @@ router.get('/', isAuth, requireRole('ADMIN'), getAllUsers);
  *       404:
  *         description: User not found
  */
-router.get('/:id', isAuth, requireRole('ADMIN'), getUserById);
+// router.get('/:id', isAuth, requireRole('ADMIN'), getUserById);
 
 /**
  * @swagger

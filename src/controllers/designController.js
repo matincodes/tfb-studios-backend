@@ -9,16 +9,18 @@ import {
 
 export async function httpCreateDesign(req, res) {
   try {
-    const { name, description } = req.body;
+    const { name, description, initialFabricId } = req.body;
     const userId = req.user.id;
 
-    if (!name) return res.status(400).json({ error: 'Name is required' });
+    if (!name || !initialFabricId) return res.status(400).json({ error: 'Design name and a selected material are required' });
 
     let imageUrl;
     if (req.file) {
       const buffer = req.file.buffer.toString('base64');
       const upload = await cloudinary.uploader.upload(`data:image/jpeg;base64,${buffer}`);
       imageUrl = upload.secure_url;
+    }else {
+      return res.status(400).json({ error: ' A design image file is required' });
     }
 
     const design = await createDesign({
@@ -26,11 +28,13 @@ export async function httpCreateDesign(req, res) {
       description,
       imageUrl,
       createdById: userId,
+      initialFabricId,
       status: 'UPLOADED',
     });
 
     res.status(201).json({ message: 'Design submitted', design });
   } catch (err) {
+    console.error("Error creating design:", err);
     res.status(500).json({ error: 'Design creation failed' });
   }
 }

@@ -10,7 +10,7 @@ import { sendVerificationEmail } from '../services/emailServices.js';
  */
 export const signUp = async (req, res) => {
   const { name, email, password, role } = req.body;
-  console.log('entered the function')
+  
   if (!email || !password || !name) {
     return sendError(res, 400, 'Name, email and password are required');
   }
@@ -62,6 +62,13 @@ export const signIn = async (req, res) => {
 
   try {
     const user = await validateUserCredentials(email, password);
+
+    console.log('--- AuthController: User object before token generation ---');
+    console.log(user);
+
+    // if (!user.isVerified) {
+    //     return sendError(res, 403, 'Your account has not been verified. Please check your email.');
+    // }
 
     const tokens = generateTokenPair({ id: user.id, email: user.email, role: user.role });
 

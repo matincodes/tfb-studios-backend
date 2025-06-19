@@ -5,7 +5,7 @@ import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import passport from './config/passport.js';
 import { corsMiddleware } from './middleware/corsMiddleware.js';
-import arcjetMiddleware from './middleware/arcjetMiddleware.js';
+// import arcjetMiddleware from './middleware/arcjetMiddleware.js';
 import { config as env } from './config/env.js';
 
 import authRoutes from './routes/authRoutes.js';
@@ -27,7 +27,7 @@ const app = express();
 // Security & Performance
 app.use(helmet());
 app.use(compression());
-app.use(arcjetMiddleware); // Arcjet middleware for security and rate limiting
+// app.use(arcjetMiddleware); // Arcjet middleware for security and rate limiting
 
 // CORS & Cookies
 app.use(corsMiddleware);

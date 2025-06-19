@@ -2,27 +2,52 @@
 import jwt from 'jsonwebtoken';
 import { config as env } from '../config/env.js';
 
-const ACCESS_EXPIRY = '30m';
-const REFRESH_EXPIRY = '30d';
 
 /**
  * Generates a pair of access and refresh tokens.
  */
 export function generateTokenPair(payload) {
-  const accessToken = jwt.sign(payload, env.ACCESS_TOKEN_SECRET, {
-    expiresIn: ACCESS_EXPIRY,
+  // Ensure the payload passed has an 'id' property.
+  if (!payload.id) {
+    // This is a safeguard against creating invalid tokens.
+    throw new Error('User ID is missing from token payload');
+  }
+
+  // The payload for the JWT should be a plain object.
+  const tokenPayload = {
+    id: payload.id,
+    email: payload.email,
+    role: payload.role
+  };
+
+  // This will show us the exact data being put into the token.
+  console.log('--- TokenService: Signing a new token with this payload ---');
+  console.log(tokenPayload);
+  // --- END LOG ---
+
+  // Add a safeguard to prevent signing a token without an ID.
+  if (!tokenPayload.id) {
+    throw new Error("Cannot generate token, user ID is missing from the payload.");
+  }
+  const accessToken = jwt.sign(tokenPayload, env.ACCESS_TOKEN_SECRET, {
+    expiresIn: '30m', // Example: 30 minutes
   });
 
-  const refreshToken = jwt.sign(payload, env.REFRESH_TOKEN_SECRET, {
-    expiresIn: REFRESH_EXPIRY,
+  const refreshToken = jwt.sign(tokenPayload, env.REFRESH_TOKEN_SECRET, {
+    expiresIn: '7d', // Example: 7 days
   });
 
   return { accessToken, refreshToken };
 }
 
+
 /**
  * Verifies a refresh token and returns the payload.
  */
 export function verifyRefreshToken(token) {
-  return jwt.verify(token, env.REFRESH_TOKEN_SECRET);
+    try {
+        return jwt.verify(token, env.REFRESH_TOKEN_SECRET);
+    } catch (err) {
+        return null;
+    }
 }

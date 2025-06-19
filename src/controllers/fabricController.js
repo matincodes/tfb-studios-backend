@@ -9,9 +9,9 @@ import {
   
   export async function httpCreateFabric(req, res) {
     try {
-      const { name, type, color } = req.body;
-  
-      if (!name || !type || !color) {
+      const { name, type, color, source } = req.body;
+
+      if (!name || !type || !color || !source) {
         return res.status(400).json({ error: 'Missing required fields' });
       }
   
@@ -22,7 +22,7 @@ import {
         imageUrl = upload.secure_url;
       }
   
-      const fabric = await createFabric({ name, type, color, imageUrl });
+      const fabric = await createFabric({ name, type, color, source, imageUrl });
       res.status(201).json({ message: 'Fabric created', fabric });
     } catch (err) {
       res.status(500).json({ error: 'Fabric creation failed' });
@@ -32,7 +32,7 @@ import {
   export async function httpGetAllFabrics(req, res) {
     try {
       const fabrics = await getAllFabrics();
-      res.json(fabrics);
+      res.status(200).json({fabrics});
     } catch (err) {
       res.status(500).json({ error: 'Failed to fetch fabrics' });
     }

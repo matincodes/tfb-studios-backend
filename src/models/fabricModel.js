@@ -6,6 +6,10 @@ export async function createFabric(data) {
 
 export async function getAllFabrics() {
   return await prisma.fabric.findMany({
+    where: {
+            // We might only want to show platform fabrics, not other users' uploads
+        source: 'PLATFORM',
+    },
     orderBy: { createdAt: 'desc' },
   });
 }

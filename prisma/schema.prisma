@@ -48,7 +48,9 @@ model Fabric {
   name          String
   type          String
   color         String
-  imageUrl      String?
+  imageUrl      String
+  composition   String?
+  price         Float? 
   source        FabricSource  @default(PLATFORM)
   uploadedBy    User?         @relation("UserUploadedFabrics", fields: [uploadedById], references: [id])
   uploadedById  String?
@@ -66,7 +68,7 @@ model Design {
   description      String?
   imageUrl         String?       // original sketch image
   status           DesignStatus  @default(UPLOADED)
-
+  initialFabricId  String?
   createdBy        User          @relation("UserSketches", fields: [createdById], references: [id])
   createdById      String
   createdAt        DateTime      @default(now())
