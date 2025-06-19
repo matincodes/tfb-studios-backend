@@ -1,6 +1,6 @@
 // src/middleware/corsMiddleware.js
 import cors from 'cors';
-import env from '../config/env.js';
+import {config as env} from '../config/env.js';
 
 // Define the allowed origin. For development, this is your Next.js frontend URL.
 // For production, you would change this to 'https://www.tfbstudios.com'
