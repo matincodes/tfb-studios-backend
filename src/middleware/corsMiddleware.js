@@ -24,4 +24,4 @@ const corsOptions = {
   allowedHeaders: ['Content-Type', 'Authorization'],
 };
 
-export default corsMiddleware = cors(corsOptions);
+export const corsMiddleware = cors(corsOptions);
