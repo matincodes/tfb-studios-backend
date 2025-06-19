@@ -10,7 +10,7 @@ import { sendVerificationEmail } from '../services/emailServices.js';
  */
 export const signUp = async (req, res) => {
   const { name, email, password, role } = req.body;
-
+  console.log('entered the function')
   if (!email || !password || !name) {
     return sendError(res, 400, 'Name, email and password are required');
   }
