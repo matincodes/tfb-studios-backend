@@ -21,23 +21,16 @@ export function generateTokenPair(payload) {
   };
 
   // This will show us the exact data being put into the token.
-  console.log('--- TokenService: Signing a new token with this payload ---');
-  console.log(tokenPayload);
-  // --- END LOG ---
+  // Debug logging removed for production.
 
-  // Add a safeguard to prevent signing a token without an ID.
-  if (!tokenPayload.id) {
-    throw new Error("Cannot generate token, user ID is missing from the payload.");
-  }
   const accessToken = jwt.sign(tokenPayload, env.ACCESS_TOKEN_SECRET, {
     expiresIn: '30m', // Example: 30 minutes
   });
 
-  const refreshToken = jwt.sign(tokenPayload, env.REFRESH_TOKEN_SECRET, {
-    expiresIn: '7d', // Example: 7 days
-  });
 
-  return { accessToken, refreshToken };
+  const refreshToken = jwt.sign(tokenPayload, env.REFRESH_TOKEN_SECRET, {
+    expiresIn: '30d', // Example: 30 days
+  });
 }
 
 
