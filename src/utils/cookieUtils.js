@@ -1,7 +1,7 @@
 // src/utils/cookieUtils.js
 const isProduction = process.env.NODE_ENV === 'production';
 const domain = isProduction ? '.tfbstudios.com' : undefined;
-const secure = isProduction;
+const secure = true;
 const sameSite = isProduction ? 'Strict' : 'None';
 
 export function setAuthCookies(res, { accessToken, refreshToken }) {
