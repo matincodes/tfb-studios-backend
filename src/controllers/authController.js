@@ -62,7 +62,10 @@ export const signIn = async (req, res) => {
 
   try {
     const user = await validateUserCredentials(email, password);
-    
+    console.log("User found:", user);
+    // Check if user is verified
+    console.log("User verification status:", user.isVerified);
+
     if (!user) {
       return sendError(res, 401, 'Invalid email or password');
     }

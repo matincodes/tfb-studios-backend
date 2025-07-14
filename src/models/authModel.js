@@ -14,6 +14,7 @@ export async function findUserByEmail(email) {
         email: true,
         role: true,
         name: true,
+        isVerified: true,
         createdAt: true,
       },
     });
@@ -33,7 +34,8 @@ export async function findUserWithPassword(email) {
         select: {
           hashed: true // Select the 'hashed' field
         }
-      }
+      },
+      isVerified: true,
     }
   });
 }
