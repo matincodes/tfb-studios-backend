@@ -2,7 +2,7 @@
 const isProduction = process.env.NODE_ENV === 'production';
 const domain = isProduction ? '.tfbstudios.com' : undefined;
 const secure = isProduction;
-const sameSite = isProduction ? 'Strict' : 'Lax';
+const sameSite = isProduction ? 'Strict' : 'None';
 
 export function setAuthCookies(res, { accessToken, refreshToken }) {
   res.cookie('access_token', accessToken, {
@@ -27,4 +27,4 @@ export function setAuthCookies(res, { accessToken, refreshToken }) {
 export function clearAuthCookies(res) {
   res.clearCookie('access_token', { domain, path: '/' });
   res.clearCookie('refresh_token', { domain, path: '/' });
-}
+  }
