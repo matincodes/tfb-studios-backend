@@ -1,15 +1,15 @@
 // src/utils/cookieUtils.js
-const isProduction = process.env.NODE_ENV === 'production';
-const domain = isProduction ? '.tfbstudios.com' : undefined;
-const secure = false;
-const sameSite = isProduction ? 'Strict' : 'None';
+// const isProduction = process.env.NODE_ENV === 'production';
+// const domain = isProduction ? '.tfbstudios.com' : undefined;
+const secure = true;
+const sameSite = 'None';
 
 export function setAuthCookies(res, { accessToken, refreshToken }) {
   res.cookie('access_token', accessToken, {
     httpOnly: false,
     secure,
     sameSite,
-    domain,
+    // domain, // Uncomment if you have a specific domain
     path: '/',
     maxAge: 30 * 60 * 1000, // 30 minutes
   });
@@ -18,7 +18,7 @@ export function setAuthCookies(res, { accessToken, refreshToken }) {
     httpOnly: true,
     secure,
     sameSite,
-    domain,
+    // domain,
     path: '/',
     maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
   });
