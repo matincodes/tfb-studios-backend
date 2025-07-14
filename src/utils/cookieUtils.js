@@ -1,6 +1,6 @@
 // src/utils/cookieUtils.js
 // const isProduction = process.env.NODE_ENV === 'production';
-// const domain = isProduction ? '.tfbstudios.com' : undefined;
+// const domain = undefined;
 const secure = true;
 const sameSite = 'None';
 
@@ -9,22 +9,20 @@ export function setAuthCookies(res, { accessToken, refreshToken }) {
     httpOnly: false,
     secure,
     sameSite,
-    // domain, // Uncomment if you have a specific domain
     path: '/',
-    maxAge: 30 * 60 * 1000, // 30 minutes
+    // maxAge: 30 * 60 * 1000, // 30 minutes
   });
 
   res.cookie('refresh_token', refreshToken, {
-    httpOnly: true,
+    httpOnly: false,
     secure,
     sameSite,
-    // domain,
     path: '/',
-    maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+    // maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
   });
 }
 
 export function clearAuthCookies(res) {
-  res.clearCookie('access_token', { domain, path: '/' });
-  res.clearCookie('refresh_token', { domain, path: '/' });
+  res.clearCookie('access_token', { path: '/' });
+  res.clearCookie('refresh_token', { path: '/' });
   }
