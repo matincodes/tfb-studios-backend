@@ -62,13 +62,14 @@ export const signIn = async (req, res) => {
 
   try {
     const user = await validateUserCredentials(email, password);
+    
+    if (!user) {
+      return sendError(res, 401, 'Invalid email or password');
+    }
 
-    console.log('--- AuthController: User object before token generation ---');
-    console.log(user);
-
-    // if (!user.isVerified) {
-    //     return sendError(res, 403, 'Your account has not been verified. Please check your email.');
-    // }
+    if (!user.isVerified) {
+        return sendError(res, 403, 'Your account has not been verified. Please check your email.');
+    }
 
     const tokens = generateTokenPair({ id: user.id, email: user.email, role: user.role });
 

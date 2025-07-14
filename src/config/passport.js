@@ -46,8 +46,7 @@ const jwtStrategy = new JwtStrategy(
         if (req && req.cookies){
           token = req.cookies['access_token'];
         }
-        console.log('--- Passport: Trying to extract token ---');
-        console.log('Token found:', !!token);
+        // Debug logs removed for production
         return token;
       },
     ]),
@@ -58,11 +57,11 @@ const jwtStrategy = new JwtStrategy(
       const user = await findUserById(jwtPayload.id);
        if (user) {
         // LOG 3: User was found in DB
-        console.log('--- Passport: User found in database ---');
+        // Debug log removed for production
         return done(null, user); // Success, user is attached to req.user
       } else {
         // LOG 4: User NOT found in DB
-        console.log('--- Passport: User NOT found in database ---');
+        // Debug log removed for production
         return done(null, false);
       }
     } catch (error) {
