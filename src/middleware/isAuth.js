@@ -15,6 +15,7 @@ export function isAuth(req, res, next) {
     }
     
     if (!user) {
+      console.log('User not authenticated');
       return res.status(401).json({ message: 'You are not authorized to perform this action.' });
     }
 

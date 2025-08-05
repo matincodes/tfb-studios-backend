@@ -17,6 +17,14 @@ model User {
   name                 String
   role                 Role             @default(USER)
   profilePicture       String?
+
+  phone                String?
+  location             String?
+  bio                  String?
+  // Use Json type to store structured settings data
+  notifications        Json?
+  privacy              Json?
+  // Password relation
   password             Password         @relation(fields: [passwordId], references: [id], onDelete: Cascade)
   passwordId           String           @unique
   createdAt            DateTime         @default(now())
@@ -59,16 +67,18 @@ model Fabric {
   updatedAt     DateTime      @updatedAt
   renderedDesigns RenderedDesign[]
   orders          Order[]
+  designsWithThisAsInitial Design[] @relation("InitialFabricForDesign")
 }
 
 
 model Design {
   id               String        @id @default(uuid())
   name             String
-  description      String?
-  imageUrl         String?       // original sketch image
+  description      String?      
+  imageMetadata    DesignMetadata[] // Metadata for the images (e.g., dimensions, format)
   status           DesignStatus  @default(UPLOADED)
   initialFabricId  String?
+  initialFabric    Fabric?      @relation("InitialFabricForDesign", fields: [initialFabricId], references: [id])
   createdBy        User          @relation("UserSketches", fields: [createdById], references: [id])
   createdById      String
   createdAt        DateTime      @default(now())
@@ -81,6 +91,17 @@ model Design {
   orders           Order[]
 }
 
+model DesignMetadata {
+  id        String   @id @default(uuid())
+  url       String
+  name      String
+  type      String
+  size      String // in bytes
+  design    Design  @relation(fields: [designId], references: [id], onDelete: Cascade)
+  designId  String
+}
+
+
 
 model RenderedDesign {
   id            String   @id @default(uuid())
@@ -90,7 +111,7 @@ model RenderedDesign {
   fabricId      String
   fabric        Fabric   @relation(fields: [fabricId], references: [id])
 
-  imageUrl      String   // URL of the rendered image
+  imageUrl      String[]   // URL of the rendered image
   notes         String?  // Optional notes from the admin who uploaded this render
   status        RenderedDesignStatus @default(PENDING_REVIEW) // Status of this specific render
 

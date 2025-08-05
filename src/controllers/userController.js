@@ -78,13 +78,21 @@ export const httpUpdateUser = [
 
   async (req, res) => {
     const { id } = req.params;
-    const { fullName, email } = req.body;
+    const loggedInUser = req.user;
+
+     // Security check: A user can only update their own profile, unless they are an admin.
+      if (loggedInUser.role !== 'ADMIN' && loggedInUser.id !== id) {
+        return res.status(403).json({ error: 'Forbidden: You are not authorized to update this user.' });
+      }
 
     try {
-      const updateData = {};
-      if (fullName) updateData.fullName = fullName;
+      const { name, email, phone, location, bio, notifications, privacy } = req.body;
+      const updateData = { name, phone, location, bio };
 
-      if (email) {
+      if (notifications) updateData.notifications = JSON.parse(notifications);
+      if (privacy) updateData.privacy = JSON.parse(privacy);
+
+      if (email &&  email.trim().toLowerCase() !== loggedInUser.email.trim().toLowerCase()) {
         if (!email.includes('@')) {
           return res.status(400).json({ error: 'Invalid email format' });
         }
@@ -102,6 +110,10 @@ export const httpUpdateUser = [
           { upload_preset: 'tfb_users' }
         );
         updateData.profilePicture = uploadedImage.secure_url;
+      }
+
+       if (Object.keys(updateData).length === 0) {
+        return res.status(400).json({ error: 'No update data provided.' });
       }
 
       const updatedUser = await updateUser(id, updateData);

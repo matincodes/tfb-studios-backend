@@ -14,19 +14,31 @@ export async function httpCreateDesign(req, res) {
 
     if (!name || !initialFabricId) return res.status(400).json({ error: 'Design name and a selected material are required' });
 
-    let imageUrl;
-    if (req.file) {
-      const buffer = req.file.buffer.toString('base64');
-      const upload = await cloudinary.uploader.upload(`data:image/jpeg;base64,${buffer}`);
-      imageUrl = upload.secure_url;
-    }else {
-      return res.status(400).json({ error: ' A design image file is required' });
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ error: 'At least one design image is required' });
+    }
+
+ 
+    const imageMetadata = [];
+    for (const file of req.files) {
+      const buffer = file.buffer.toString('base64');
+      const upload = await cloudinary.uploader.upload(`data:image/jpeg;base64,${buffer}`, {
+        upload_preset: 'design_images',
+      });
+      imageMetadata.push({
+        name: upload.original_filename || file.originalname || "untitled",
+        url: upload.secure_url,
+        size: (upload.bytes / 1024 / 1024).toFixed(2),
+        type: upload.format,
+      });
     }
 
     const design = await createDesign({
       name,
       description,
-      imageUrl,
+      imageMetadata: {
+        create: imageMetadata,
+      },
       createdById: userId,
       initialFabricId,
       status: 'UPLOADED',

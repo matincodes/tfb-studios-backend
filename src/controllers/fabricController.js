@@ -9,10 +9,10 @@ import {
   
   export async function httpCreateFabric(req, res) {
     try {
-      const { name, type, color, source } = req.body;
+      const { name, type, color, composition, source } = req.body;
 
-      if (!name || !type || !color || !source) {
-        return res.status(400).json({ error: 'Missing required fields' });
+      if (!name || !type || !color || !composition || !source) {
+        return res.status(400).json({ error: 'Missing required fields: name, type, color, composition and source are all required.' });
       }
   
       let imageUrl;
@@ -22,7 +22,7 @@ import {
         imageUrl = upload.secure_url;
       }
   
-      const fabric = await createFabric({ name, type, color, source, imageUrl });
+      const fabric = await createFabric({ name, type, color, source, composition, imageUrl });
       res.status(201).json({ message: 'Fabric created', fabric });
     } catch (err) {
       res.status(500).json({ error: 'Fabric creation failed' });

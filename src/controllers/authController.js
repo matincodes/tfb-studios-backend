@@ -4,6 +4,7 @@ import { generateTokenPair, verifyRefreshToken } from '../services/tokenService.
 import { setAuthCookies, clearAuthCookies } from '../utils/cookieUtils.js';
 import { sendSuccess, sendError } from '../utils/response.js';
 import { sendVerificationEmail } from '../services/emailServices.js';
+import { findUserByEmail } from '../models/authModel.js';
 
 /**
  * @desc    Sign up a new user
@@ -13,6 +14,12 @@ export const signUp = async (req, res) => {
   
   if (!email || !password || !name) {
     return sendError(res, 400, 'Name, email and password are required');
+  }
+
+  // Check if user already exists
+  const existingUser = await findUserByEmail(email);
+  if (existingUser) {
+    return sendError(res, 409, 'User with this email already exists');
   }
 
   try {
