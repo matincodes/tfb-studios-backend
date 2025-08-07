@@ -25,7 +25,7 @@ import { swaggerUi, specs } from './config/swagger.js';
 
 const app = express();
 
-app.set('trust proxy', 1);
+// app.set('trust proxy', 1);
 
 // Security & Performance
 app.use(helmet());
@@ -45,14 +45,6 @@ app.use(express.urlencoded({ extended: true }));
 
 // Auth
 app.use(passport.initialize());
-
-// app.options('*', (req, res) => {
-//   res.setHeader('Access-Control-Allow-Origin', 'https://frontend.tfbstudios.com');
-//   res.setHeader('Access-Control-Allow-Credentials', 'true');
-//   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-//   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-//   return res.sendStatus(204);
-// });
 
 // Docs
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(specs));
