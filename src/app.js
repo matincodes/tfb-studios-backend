@@ -34,7 +34,6 @@ app.use(compression());
 
 // CORS & Cookies
 app.use(corsMiddleware);
-app.options('*', corsMiddleware);  // ✅ Preflight handler
 app.use(cookieParser());
 
 // Logging
