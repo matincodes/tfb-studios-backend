@@ -34,25 +34,26 @@ app.use(compression());
 
 // CORS & Cookies
 app.use(corsMiddleware);
+app.options('*', corsMiddleware);  // ✅ Preflight handler
 app.use(cookieParser());
 
 // Logging
 app.use(morgan(env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 
 // Parsers
-app.use(express.json({ limit: '10mb' }));
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Auth
 app.use(passport.initialize());
 
-app.options('*', (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', 'https://frontend.tfbstudios.com');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  return res.sendStatus(204);
-});
+// app.options('*', (req, res) => {
+//   res.setHeader('Access-Control-Allow-Origin', 'https://frontend.tfbstudios.com');
+//   res.setHeader('Access-Control-Allow-Credentials', 'true');
+//   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+//   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+//   return res.sendStatus(204);
+// });
 
 // Docs
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(specs));
