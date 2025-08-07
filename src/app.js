@@ -25,6 +25,8 @@ import { swaggerUi, specs } from './config/swagger.js';
 
 const app = express();
 
+app.set('trust proxy', 1);
+
 // Security & Performance
 app.use(helmet());
 app.use(compression());

@@ -21,7 +21,8 @@ const corsOptions = {
   credentials: true,
   // You can also specify other options if needed
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+  optionsSuccessStatus: 200
 };
 
 export const corsMiddleware = cors(corsOptions);
