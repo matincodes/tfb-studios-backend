@@ -1,25 +1,29 @@
-const secure = false;
-const sameSite = 'Lax';
+// const secure = true;
+// const sameSite = 'None';
+  const isProd = process.env.NODE_ENV === 'production';
+
 
 /**
  * Sets secure, HttpOnly authentication cookies.
  */
 export function setAuthCookies(res, { accessToken, refreshToken }) {
+
   res.cookie('access_token', accessToken, {
-    httpOnly: false, // This MUST be true for security
-    secure: secure,
-    sameSite: sameSite,
+    httpOnly: true,
+    secure: isProd,
+    sameSite: isProd ? 'None' : 'Lax',
     path: '/',
-    maxAge: 30 * 60 * 1000, // 30 minutes
+    maxAge: 30 * 60 * 1000,
   });
 
   res.cookie('refresh_token', refreshToken, {
-    httpOnly: false, // This MUST be true for security
-    secure: secure,
-    sameSite: sameSite,
+    httpOnly: true,
+    secure: isProd,
+    sameSite: isProd ? 'None' : 'Lax',
     path: '/',
-    maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+    maxAge: 30 * 24 * 60 * 60 * 1000,
   });
+
 }
 
 /**

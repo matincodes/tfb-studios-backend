@@ -22,8 +22,10 @@ export async function registerUser({ name, email, password, role = 'USER' }) {
     throw error;
   }
 
+  console.log("Register:" , name, email, password, role)
   const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
 
+  console.log("Hashed:", hashedPassword)
   const user = await createUser({ email, name, role, hashedPassword });
   return user;
 }

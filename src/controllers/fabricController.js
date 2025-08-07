@@ -14,6 +14,8 @@ import {
       if (!name || !type || !color || !composition || !source) {
         return res.status(400).json({ error: 'Missing required fields: name, type, color, composition and source are all required.' });
       }
+      const userId = req.user.id;
+
   
       let imageUrl;
       if (req.file) {
@@ -22,7 +24,7 @@ import {
         imageUrl = upload.secure_url;
       }
   
-      const fabric = await createFabric({ name, type, color, source, composition, imageUrl });
+      const fabric = await createFabric({ name, type, color, source, composition, imageUrl, uploadedById: userId});
       res.status(201).json({ message: 'Fabric created', fabric });
     } catch (err) {
       res.status(500).json({ error: 'Fabric creation failed' });
@@ -31,7 +33,15 @@ import {
   
   export async function httpGetAllFabrics(req, res) {
     try {
-      const fabrics = await getAllFabrics();
+
+      const { source, userId, status } = req.query;
+
+      const filter = {};
+      if (source) filter.source = source;
+      if (userId) filter.uploadedById = userId;
+      if (status) filter.status = status;
+
+      const fabrics = await getAllFabrics(filter);
       res.status(200).json({fabrics});
     } catch (err) {
       res.status(500).json({ error: 'Failed to fetch fabrics' });

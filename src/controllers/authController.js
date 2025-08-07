@@ -22,6 +22,7 @@ export const signUp = async (req, res) => {
     return sendError(res, 409, 'User with this email already exists');
   }
 
+  console.log(name, email, password)
   try {
     const user = await registerUser({ name, email, password, role });
 

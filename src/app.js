@@ -15,6 +15,7 @@ import fabricRoutes from './routes/fabricRoutes.js';
 import aiRoutes from './routes/aiRoutes.js';
 import designRoutes from './routes/designRoutes.js';
 import renderRoutes from './routes/renderRoutes.js';
+import commentRoutes from './routes/commentRoutes.js';
 
 
 
@@ -54,8 +55,7 @@ app.use('/api/fabrics', fabricRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/designs', designRoutes);
 app.use('/api/render', renderRoutes);
-
-
+app.use('/api/comments', commentRoutes);
 
 // Health check
 app.get('/', (_, res) => res.send('TFB Studios API is live'));

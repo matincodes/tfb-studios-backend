@@ -4,12 +4,9 @@ export async function createFabric(data) {
   return await prisma.fabric.create({ data });
 }
 
-export async function getAllFabrics() {
+export async function getAllFabrics(filter = {}) {
   return await prisma.fabric.findMany({
-    where: {
-            // We might only want to show platform fabrics, not other users' uploads
-        source: 'PLATFORM',
-    },
+    where: filter,
     orderBy: { createdAt: 'desc' },
   });
 }

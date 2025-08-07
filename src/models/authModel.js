@@ -60,21 +60,28 @@ export async function findUserById(id) {
  * Create a new user (used during signup).
  */
 export async function createUser(data) {
-  const { email, hashedPassword, name, role = 'USER' } = data;
+  console.log("--Starting Create--", data)
+  const { email, hashedPassword, name, role } = data;
+  console.log("Creating",email, hashedPassword, name, role)
 
   const existingUser = await prisma.user.findUnique({ where: { email } });
+  console.log("Exist:", existingUser)
   if (existingUser) throw new Error('Email already registered');
+
+  console.log("Create User:", email, name, hashedPassword, role)
+
+  const password = await prisma.password.create({
+    data: {
+      hashed: hashedPassword,
+    },
+  });
 
   return prisma.user.create({
     data: {
       name,
       email,
       role,
-      password: {          
-        create: {          
-          hashed: hashedPassword
-        }
-      },
+      passwordId: password.id,
     },
     select: {
       id: true,

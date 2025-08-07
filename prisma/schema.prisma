@@ -60,6 +60,8 @@ model Fabric {
   composition   String?
   price         Float? 
   source        FabricSource  @default(PLATFORM)
+  status        FabricStatus? @default(PENDING_REVIEW)
+
   uploadedBy    User?         @relation("UserUploadedFabrics", fields: [uploadedById], references: [id])
   uploadedById  String?
 
@@ -105,6 +107,7 @@ model DesignMetadata {
 
 model RenderedDesign {
   id            String   @id @default(uuid())
+  name          String
   designId      String   // Foreign key to the parent Design (sketch)
   design        Design   @relation(fields: [designId], references: [id], onDelete: Cascade) // If parent Design is deleted, cascade delete renders
 
@@ -200,6 +203,12 @@ enum FabricSource {
   PLATFORM     
   USER_UPLOAD 
 }
+enum FabricStatus {
+  PENDING_REVIEW
+  ACCEPTED
+  REJECTED
+}
+
 
 enum OrderStatus {
   PENDING
