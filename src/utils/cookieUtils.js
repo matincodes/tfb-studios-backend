@@ -1,6 +1,5 @@
-// const secure = true;
-// const sameSite = 'None';
-  const isProd = process.env.NODE_ENV === 'production';
+
+const isProd = process.env.NODE_ENV === 'production';
 
 
 /**
@@ -12,7 +11,8 @@ export function setAuthCookies(res, { accessToken, refreshToken }) {
     httpOnly: true,
     secure: isProd,
     sameSite: isProd ? 'None' : 'Lax',
-    path: '/',
+    domain: isProd ? ".up.railway.app" : "localhost",
+    // path: '/',
     maxAge: 30 * 60 * 1000,
   });
 
@@ -20,7 +20,8 @@ export function setAuthCookies(res, { accessToken, refreshToken }) {
     httpOnly: true,
     secure: isProd,
     sameSite: isProd ? 'None' : 'Lax',
-    path: '/',
+    domain: isProd ? ".up.railway.app" : "localhost",
+    // path: '/',
     maxAge: 30 * 24 * 60 * 60 * 1000,
   });
 
