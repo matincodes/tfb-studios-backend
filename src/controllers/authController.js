@@ -84,9 +84,6 @@ export const signIn = async (req, res) => {
 
     const tokens = generateTokenPair({ id: user.id, email: user.email, role: user.role });
 
-    res.setHeader('Access-Control-Allow-Origin', 'https://frontend.tfbstudios.com');
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-
     setAuthCookies(res, tokens);
 
     return sendSuccess(res, 200, 'Login successful', { user });
