@@ -1,12 +1,12 @@
 
 const isProd = process.env.NODE_ENV === 'production';
 
-
+console.log(isProd)
 /**
  * Sets secure, HttpOnly authentication cookies.
  */
 export function setAuthCookies(res, { accessToken, refreshToken }) {
-
+console.log("Prod:", isProd)
   res.cookie('access_token', accessToken, {
     httpOnly: true,
     secure: isProd,
